@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earth Jukebox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/tone@15.1.22/build/Tone.js"></script>
+<script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.170.0/build/three.module.js" } }</script>
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+<!-- ============ start screen ============ -->
+<div id="intro" class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" aria-describedby="intro-desc">
+  <h1 id="intro-title" class="main-title big">Earth Jukebox</h1>
+  <p id="intro-desc" class="intro-desc">Hear 140 years of Earth's temperature, 1881 to 2023, from NASA data.</p>
+  <div class="intro-choices" role="group" aria-label="Choose how to explore">
+    <button id="startListening" class="choice primary" type="button" autofocus>
+      <span class="choice-title">▶ Listening mode</span>
+      <span class="choice-desc">Guided by voice, keyboard only. Made for blind and low-vision people. Recommended.</span>
+    </button>
+    <button id="startVisual" class="choice" type="button">
+      <span class="choice-title">◉ Visual mode</span>
+      <span class="choice-desc">See the globe and the readings, use the mouse. Sound on, no voice guide.</span>
+    </button>
+  </div>
+  <p class="intro-hint" aria-hidden="true">🎧 Headphones recommended · ↑ ↓ choose · Enter start · H help</p>
+  <p id="intro-loading" class="intro-hint" aria-live="polite"></p>
+</div>
+
+<!-- ============ the app ============ -->
+<div id="app" inert>
+<header class="topbar">
+  <h1 class="main-title">Earth Jukebox</h1>
+
+  <form id="searchForm" class="search" role="search" autocomplete="off">
+    <input id="searchInput" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="searchList"
+           placeholder="Search a country, region or ocean…  ( / )" aria-label="Search a country, region or ocean">
+    <button id="searchClear" class="icon" type="button" aria-label="Clear search" hidden>✕</button>
+    <button class="icon" type="submit" aria-label="Go">⌕</button>
+    <ul id="searchList" role="listbox" aria-label="Matches" hidden></ul>
+  </form>
+
+  <div class="top-buttons">
+    <button id="helpBtn" class="pill" type="button" aria-keyshortcuts="H">? Help</button>
+    <button id="menuBtn" class="pill" type="button" aria-keyshortcuts="M">☰ Menu</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="timeline" aria-label="Year">
+    <output id="yearOut" class="year-big"></output>
+    <div class="timeline-track">
+      <input id="year" type="range" min="0" step="1" aria-label="Year">
+      <div class="timeline-labels" aria-hidden="true"><span>2023</span><span>1951</span><span>1881</span></div>
+    </div>
+  </section>
+
+  <section class="stage" aria-label="Globe">
+    <div id="globe" class="globe" role="application" tabindex="0" aria-roledescription="globe"
+         aria-label="Earth. Arrow keys move, comma and period change the year, S plays music, H for help, M for the menu."></div>
+    <p id="caption" class="caption" aria-hidden="true"></p>
+  </section>
+
+  <aside class="panel" aria-label="Readings and controls">
+    <div class="play-row">
+      <button id="playBtn" class="play" type="button" aria-pressed="false" aria-keyshortcuts="S">▶</button>
+      <span id="playLabel" class="play-label" aria-hidden="true">Music off · S</span>
+    </div>
+
+    <div class="place">
+      <h2 id="placeName"></h2>
+      <p id="coords"></p>
+    </div>
+
+    <div class="rings">
+      <figure class="ring" id="ringHere" role="img"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="42"/><circle class="arc" cx="50" cy="50" r="42"/></svg><span class="ring-value"></span><figcaption>Here</figcaption></figure>
+      <figure class="ring" id="ringWorld" role="img"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="42"/><circle class="arc" cx="50" cy="50" r="42"/></svg><span class="ring-value"></span><figcaption>World</figcaption></figure>
+      <figure class="ring" id="ringChange" role="img"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="42"/><circle class="arc" cx="50" cy="50" r="42"/></svg><span class="ring-value"></span><figcaption>vs 1951</figcaption></figure>
+    </div>
+
+    <div class="sliders">
+      <label for="lonInput">West <span aria-hidden="true">◀ ▶</span> East</label>
+      <input id="lonInput" type="range" min="-180" max="180" step="2">
+      <label for="latInput">South <span aria-hidden="true">◀ ▶</span> North</label>
+      <input id="latInput" type="range" min="-88" max="88" step="2">
+    </div>
+
+    <div class="links">
+      <button id="lineBtn" class="link" type="button" aria-keyshortcuts="Enter">♫ Play the whole line</button>
+      <button id="csvBtn" class="link" type="button" aria-keyshortcuts="D">⬇ This spot's data</button>
+    </div>
+
+    <section id="debug" hidden></section>
+    <p class="credit">Data: NASA SVS #5207 · GISTEMP v4 · vs. the 1951–1980 average</p>
+  </aside>
+</main>
+</div>
+
+<div id="announce" class="sr-only" aria-live="polite"></div>
+</body>
+</html>
