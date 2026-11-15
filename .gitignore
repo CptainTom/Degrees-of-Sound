@@ -8,3 +8,5 @@ node_modules/
 Thumbs.db
 # Zips of the project (integrated already; they only bloat the repo)
 *.zip
+# Team notes for the presentation (kept locally, not on GitHub)
+explained/

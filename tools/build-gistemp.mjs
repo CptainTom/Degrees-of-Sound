@@ -1,5 +1,5 @@
 // Decoder: turns NASA's temperature-anomaly video (SVS #5207) back into numbers.
-// Plain-language explanation: explained/01-decoder.md
+// Method: colour-match each map cell to NASA's colorbar, then check the yearly means against NASA's numbers.
 // Source video (not in git, 114 MB):
 //   https://svs.gsfc.nasa.gov/vis/a000000/a005200/a005207/2023GISTEMP_Map_SOS.mp4  →  source/gistemp/gistemp_sos.mp4
 //
