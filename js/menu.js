@@ -20,7 +20,7 @@ const valueText = item => {
 const spoken = (item, i, n) => {
   const v = valueText(item);
   const how = item.kind === 'choice' ? 'Left and right to change.' : item.kind === 'toggle' ? 'Enter to switch.' : '';
-  const end = !v && /[.?!]$/.test(item.label) ? ' ' : '. ';   // "What is Earth Jukebox?" — no extra full stop
+  const end = !v && /[.?!]$/.test(item.label) ? ' ' : '. ';   // "What is Degrees of Sound?" — no extra full stop
   return `${item.label}${v ? ', ' + v : ''}${end}${item.help ?? ''} ${how} ${i + 1} of ${n}.`.replace(/\s+/g, ' ').trim();
 };
 

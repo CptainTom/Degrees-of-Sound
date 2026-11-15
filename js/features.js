@@ -77,7 +77,7 @@ export function createFeatures({ ds, audio, signed, here, where, show = () => {}
   // ---------- [L] sound tour ----------
   const guide = () => sequence(async alive => {
     const steps = [
-      ['Sound tour. Everything in Earth Jukebox is about temperature compared with normal. This is normal:', () => audio.note(0, true)],
+      ['Sound tour. Everything in Degrees of Sound is about temperature compared with normal. This is normal:', () => audio.note(0, true)],
       ['One degree warmer than normal. Higher notes mean warmer:', () => audio.note(1, true)],
       ['Two degrees warmer, the highest note. Warm places sound like a soft bell:', () => audio.note(2, true)],
       ['Two degrees colder, the lowest note. Cold places sound like wood:', () => audio.note(-2, true)],
@@ -159,7 +159,7 @@ export function createFeatures({ ds, audio, signed, here, where, show = () => {}
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const a = Object.assign(document.createElement('a'), {
       href: URL.createObjectURL(blob),
-      download: `earth-jukebox_${state.cursorLat}_${state.needleLon}.csv`,
+      download: `degrees-of-sound_${state.cursorLat}_${state.needleLon}.csv`,
     });
     a.click();
     URL.revokeObjectURL(a.href);

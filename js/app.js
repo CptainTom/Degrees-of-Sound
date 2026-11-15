@@ -48,8 +48,8 @@ const placeName = () => placeAt(state.cursorLat, state.needleLon)?.name ?? regio
 const settings = Object.assign({
   mode: 'listening', narrator: true, narratorByMode: { listening: true, visual: false }, rate: 1.1, detailed: true, subtitles: true,
   volume: 0, hum: true, rhythm: true, strumSpeed: 3, exploreTouch: false, readableFont: false, bigText: false,
-}, JSON.parse(localStorage.getItem('earth-jukebox-settings') || '{}'));
-const save = () => localStorage.setItem('earth-jukebox-settings', JSON.stringify(settings));
+}, JSON.parse(localStorage.getItem('degrees-of-sound-settings') || '{}'));
+const save = () => localStorage.setItem('degrees-of-sound-settings', JSON.stringify(settings));
 const SPEEDS = { 1: 110, 2: 80, 3: 50, 4: 35, 5: 22 };
 const BASE_DB = audio.CONFIG.masterDb;
 function applySettings() {
@@ -274,7 +274,7 @@ function openHelp() {
   openMenu({
     id: 'help', title: 'Help', intro: 'Every key, explained. Up and down to listen, Enter to try it, Escape to close.', sound: menuSound,
     items: [
-      action('What is Earth Jukebox?', 'You explore NASA temperature maps from 1881 to 2023 by ear. Every sound compares a place with its normal temperature from 1951 to 1980. Higher, faster and brighter means warmer than normal.', () => {}),
+      action('What is Degrees of Sound?', 'You explore NASA temperature maps from 1881 to 2023 by ear. Every sound compares a place with its normal temperature from 1951 to 1980. Higher, faster and brighter means warmer than normal.', () => {}),
       action('L: sound tour', 'One minute: hear what every sound means.', close(features.guide)),
       action('Arrow keys: move', 'Left and right go west and east, up and down go north and south, 10 degrees at a time. Hold Shift for small steps.', close()),
       action('Comma and period: travel in time', 'One year back or forward. With Shift, 10 years. Home and End jump to 1881 and 2023.', close()),
@@ -326,7 +326,7 @@ async function begin(mode) {
   $('globe').focus();
   audio.setDrone(ds.globalMean[state.yi]);
   if (mode === 'listening') {
-    speak(`Welcome to Earth Jukebox. You are on a globe of the Earth, at ${placeName()}, in ${ds.years[state.yi]}. ` +
+    speak(`Welcome to Degrees of Sound. You are on a globe of the Earth, at ${placeName()}, in ${ds.years[state.yi]}. ` +
       'Arrow keys move you around the world. Comma and period travel through the years. ' +
       'The music is off. Press S whenever you want to hear it: higher and faster means warmer than normal. ' +
       'Press L for a one minute sound tour, H for help, and M for the menu. ' +
@@ -352,7 +352,7 @@ $('intro').addEventListener('keydown', e => {
     next.focus();
     speak(introSay[next.id], { subtitle: false });
   } else if (e.code === 'KeyH' || (e.code === 'Slash' && e.shiftKey)) {
-    speak('Earth Jukebox lets you hear NASA temperature maps. Choose a mode with the up and down arrows, then press Enter. ' +
+    speak('Degrees of Sound lets you hear NASA temperature maps. Choose a mode with the up and down arrows, then press Enter. ' +
       'Listening mode is recommended if you cannot see the screen. Headphones give the best experience.', { subtitle: false });
   } else if (e.code !== 'Enter' && e.code !== 'Space' && e.code !== 'Tab' && !e.repeat && i >= 0) {
     speak(introSay[introChoices[i].id], { subtitle: false });   // any other key: say where we are
