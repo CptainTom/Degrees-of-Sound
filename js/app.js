@@ -36,6 +36,11 @@ const words = v => v === null ? 'no measurement'
   : Math.abs(v) < 0.2 ? 'about normal'
   : `${Math.abs(v) >= 1.98 ? '2 degrees or more' : Math.abs(v).toFixed(1) + ' degrees'} ${v > 0 ? 'warmer' : 'colder'} than normal`;
 const shortWords = v => v === null ? 'no data' : Math.abs(v) < 0.2 ? 'normal' : `${v > 0 ? 'plus' : 'minus'} ${Math.abs(v).toFixed(1)}`;
+// NASA GISS: the 1951-1980 world average was about 14 °C (GISTEMP FAQ, "The Elusive Absolute Surface Air Temperature").
+// Only the WORLD number can be turned into a real temperature; local baselines aren't in this dataset.
+const WORLD_BASE_C = 14;
+const worldTemp = v => `${(WORLD_BASE_C + v).toFixed(1)}°`;
+const worldWords = v => `about ${(WORLD_BASE_C + v).toFixed(1)} degrees, ${words(v)}`;
 const here = () => ds.getValue(state.yi, state.cursorLat, state.needleLon);
 const placeName = () => placeAt(state.cursorLat, state.needleLon)?.name ?? regionName(state.cursorLat, state.needleLon, 'en');
 
@@ -62,7 +67,7 @@ function applySettings() {
 }
 
 const describe = (full = settings.detailed) => full
-  ? `${placeName()}. ${latWords(state.cursorLat)}, ${lonWords(state.needleLon)}. ${ds.years[state.yi]}: ${words(here())}. World average: ${words(ds.globalMean[state.yi])}.`
+  ? `${placeName()}. ${latWords(state.cursorLat)}, ${lonWords(state.needleLon)}. ${ds.years[state.yi]}: ${words(here())}. World average: ${worldWords(ds.globalMean[state.yi])}.`
   : `${placeName()}, ${ds.years[state.yi]}: ${shortWords(here())}.`;
 
 const features = createFeatures({ ds, audio, signed, here, where: placeName, show: t => { $('caption').textContent = t; }, resume: () => startSpot() });
@@ -105,12 +110,12 @@ function playLine() {
 const C = 2 * Math.PI * 42;
 const mix = (a, b, t) => a.map((x, i) => Math.round(x + (b[i] - x) * t));
 const ringColor = v => v === null ? 'rgb(90,90,100)' : `rgb(${(v >= 0 ? mix([255, 214, 120], [255, 70, 40], Math.min(1, v / 2)) : mix([190, 230, 255], [40, 120, 255], Math.min(1, -v / 2))).join(',')})`;
-function setRing(id, v, aria) {
+function setRing(id, v, aria, label) {
   const el = $(id), arc = el.querySelector('.arc');
   arc.style.strokeDasharray = C;
   arc.style.strokeDashoffset = C * (1 - (v === null ? 0 : Math.min(1, Math.abs(v) / 2)));
   arc.style.stroke = ringColor(v);
-  el.querySelector('.ring-value').textContent = v === null ? '—' : short(v);
+  el.querySelector('.ring-value').textContent = v === null ? '—' : (label ?? short(v));
   el.querySelector('.ring-value').style.color = ringColor(v);
   el.setAttribute('aria-label', aria);
 }
@@ -128,7 +133,7 @@ function render() {
   $('placeName').textContent = placeName();
   $('coords').textContent = `${latLabel(state.cursorLat)} · ${lonLabel(state.needleLon)} · ${year}`;
   setRing('ringHere', v, `Here: ${words(v)}`);
-  setRing('ringWorld', gm, `World average: ${words(gm)}`);
+  setRing('ringWorld', gm, `World average: ${worldWords(gm)}`, worldTemp(gm));
   setRing('ringChange', change, change === null ? 'Change since 1951: no data' : `Change since 1951: ${Math.abs(change).toFixed(1)} degrees ${change >= 0 ? 'warmer' : 'colder'}`);
 }
 
@@ -323,13 +328,12 @@ async function begin(mode) {
   if (mode === 'listening') {
     speak(`Welcome to Earth Jukebox. You are on a globe of the Earth, at ${placeName()}, in ${ds.years[state.yi]}. ` +
       'Arrow keys move you around the world. Comma and period travel through the years. ' +
-      'S starts or stops the music: higher and faster means warmer than normal. ' +
+      'The music is off. Press S whenever you want to hear it: higher and faster means warmer than normal. ' +
       'Press L for a one minute sound tour, H for help, and M for the menu. ' +
       'If you use a screen reader, press V to turn this voice off.');
-    whenQuiet(() => { if ($('intro').hidden && !audio.playing) setMusic(true, false); }, 'welcome');
+    // no music until the user presses S (the user decides when to listen)
   } else {
-    setMusic(true, false);
-    speak('Visual mode. Click the globe to move, or press H for help.');
+    speak('Visual mode. Click the globe to move. Press S or the play button for music, H for help.');
   }
 }
 
