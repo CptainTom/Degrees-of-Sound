@@ -113,12 +113,19 @@ button, input, select { font-family: inherit; }
 .timeline-labels { display: flex; flex-direction: column; justify-content: space-between; color: var(--dim); font-size: .9em; }
 
 /* globe */
-.stage { display: flex; flex-direction: column; align-items: center; min-height: 0; }
+.stage { position: relative; display: flex; flex-direction: column; align-items: center; min-height: 0; }
 .globe { flex: 1; width: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; border-radius: 12px; }
 .globe canvas { display: block; }
 /* keyboard focus: no box, a soft warm glow behind the Earth instead (a CSS filter on the 3D canvas can blank it) */
 .globe:focus-visible { outline: none; background: radial-gradient(circle at center, rgba(255, 209, 102, .16) 0, rgba(255, 209, 102, .06) 38%, transparent 62%); }
-.caption { min-height: 2.8em; max-width: 64ch; text-align: center; font-size: 1.1em; padding-top: 6px; color: #fff; text-shadow: 0 0 6px #000; }
+/* subtitles float over the bottom of the globe area (like film subtitles), so long sentences never shrink the globe */
+.caption {
+  position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); z-index: 2;
+  width: max-content; max-width: min(80ch, 96%); pointer-events: none;
+  text-align: center; font-size: 1.1em; color: #fff; text-shadow: 0 0 6px #000;
+  padding: 4px 14px; border-radius: 10px; background: rgba(3, 6, 19, .72);
+}
+.caption:empty { display: none; }
 
 /* ================= right side: no boxes ================= */
 .panel { align-self: center; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 4px; }
@@ -178,9 +185,12 @@ input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 
 @media (max-width: 860px) {
   body { overflow: auto; }
   #app { height: auto; display: block; }
-  .topbar { flex-wrap: wrap; }
+  .topbar { flex-wrap: wrap; gap: 12px; padding: 12px 14px 4px; }
+  .search { order: 3; flex: 1 1 100%; max-width: none; min-width: 0; }   /* search gets its own full-width row */
+  .main-title { font-size: clamp(13px, 4.2vw, 20px); }
   .layout { grid-template-columns: 1fr; }
   .globe { height: 80vw; flex: none; }
+  .caption { position: static; transform: none; width: auto; margin-top: 6px; }   /* globe has a fixed height here */
   .timeline { order: 2; }
   .timeline-track { flex-direction: column; width: 100%; }
   #year { writing-mode: horizontal-tb; direction: ltr; width: 100%; height: 6px; }
